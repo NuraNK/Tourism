@@ -16,6 +16,8 @@ class UserRegisterView(CreateAPIView):
     queryset = User.objects.all()
 
 
+
+
 class CheckEmailPhoneView(APIView):
 
     def get(self, request):

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     
     'accounts',
     'blog',
+    'HotelRestaurant',
     'tour_pack',
 ]
 

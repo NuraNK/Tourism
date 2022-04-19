@@ -1,90 +1,70 @@
 from django.db import models
 from accounts.models import User
 from base.abstract_model import TimeStampedModel
+from django.core.validators import MaxValueValidator, MinValueValidator
 
+class Category(TimeStampedModel):
+    name = models.CharField(max_length=128)
 
-class Image(TimeStampedModel):
-    file = models.ImageField(upload_to='images/')
-
+    def __str__(self):
+        return self.name
 
 class Blog(TimeStampedModel):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='category_blog')
     title = models.CharField(max_length=128)
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        blank=True,
-        null=True
     )
-    image = models.ImageField(upload_to='blog_images/')
-    images = models.ForeignKey(
-        Image,
-        on_delete=models.CASCADE
-    )
+    image = models.ImageField(upload_to='blog_images/', null=True)
     description = models.TextField()
-    rating_result = models.FloatField(
-        blank=True,
-        null=True
-    )
 
 
-class Reviews(TimeStampedModel):
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True
-    )
+    def __str__(self):
+        return self.title
+
+class ReviewTotal(TimeStampedModel):
+    rate = models.FloatField(default=0.00)
+    all = models.IntegerField(default=0)
+    total = models.IntegerField(default=0)
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE, related_name='blog_totals')
+
+class Commentary(TimeStampedModel):
+    first_name = models.CharField(max_length=128)
+    last_name = models.CharField(max_length=128)
+    email = models.EmailField()
     text = models.TextField()
     blog = models.ForeignKey(
         Blog,
         on_delete=models.CASCADE,
         blank=True,
-        null=True
-    )
-
-
-class RatingStar(TimeStampedModel):
-    value = models.SmallIntegerField(default=0)
-
-    def __str__(self):
-        return f'{self.value}'
-
-
-class Rating(TimeStampedModel):
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True
-    )
-    star = models.ForeignKey(
-        RatingStar,
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True
-    )
-    blog = models.ForeignKey(
-        Blog,
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True
+        null=True,
+        related_name='comment'
     )
 
     def __str__(self):
-        return f'{self.star}'
+        return f'{self.first_name} {self.last_name}'
+
+def r(x):
+    return round(x * 2.0) / 2.0
+
+
+class Review(TimeStampedModel):
+    # text = models.TextField()
+    rate = models.FloatField(validators=[MaxValueValidator(5.0),MinValueValidator(1.0)])
+    author = models.ForeignKey('accounts.User', on_delete=models.CASCADE, related_name='reviews')
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE, related_name='reviews')
+
+    def save(self, *args, **kwargs):
+        review_total = ReviewTotal.objects.filter(blog=self.blog).first()
+        if review_total:
+            review_total.total += 1
+            review_total.all += self.rate
+            review_total.rate = r(review_total.all / review_total.total)
+            review_total.save()
+        else:
+            ReviewTotal.objects.create(rate=self.rate, all=self.rate, total=1,blog=self.blog)
+        super().save(*args, **kwargs)
 
     class Meta:
-        unique_together = ["user"]
-
-
-class RatingResult(TimeStampedModel):
-    rating = models.IntegerField(default=0)
-    blog = models.ForeignKey(
-        Blog,
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True
-    )
-
-    def __str__(self):
-        return f'{self.rating}-{self.blog.title}'
+        unique_together=['author','blog']

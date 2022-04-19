@@ -1,11 +1,36 @@
 from accounts.models import User
-from .models import Rating, Reviews, Blog, RatingResult, Image
+from .models import Commentary, Blog, ReviewTotal, Review, Category
 from rest_framework import serializers
 
-class ImageSerializer(serializers.ModelSerializer):
+
+class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = Image
-        fields = '__all__'
+        model = Category
+        fields = (
+            'id',
+            'name'
+        )
+
+class CategoryListSerializer(serializers.ModelSerializer):
+    category_blog = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Category
+        fields = (
+            'id',
+            'name',
+            'category_blog'
+        )
+
+    def get_category_blog(self, obj):
+        return obj.category_blog.all().count()
+
+
+class ReviewTotalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ReviewTotal
+        fields = ('rate', 'total')
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,61 +40,103 @@ class UserSerializer(serializers.ModelSerializer):
             'email',
         )
 
-class BlogSerializer(serializers.ModelSerializer):
+
+class CreateBlogSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
+
     class Meta:
         model = Blog
         fields = (
             'id',
+            'category',
             'user',
             'title',
             'image',
             'description',
-            'rating_result',
 
         )
 
-class RatingResultSerializer(serializers.ModelSerializer):
+
+class RateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = RatingResult
+        model = Review
         fields = (
             'id',
-            'blog',
-            'rating',
-        )
-class RatingSerializer(serializers.ModelSerializer):
-    # user = UserSerializer(read_only=True)
-    # blog = BlogSerializer(read_only=True)
-    class Meta:
-        model = Rating
-        fields = (
-            'id',
-            # 'user',
-            'star',
-            'blog',
+            'rate',
         )
 
-class RatingUpdateSerializer(serializers.ModelSerializer):
-    # user = UserSerializer(read_only=True)
-    # blog = BlogSerializer(read_only=True)
-    class Meta:
-        model = Rating
-        fields = (
-            'id',
-            # 'user'
-            'star',
-            # 'blog'
-        )
 
-class ReviewsSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+class CommentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Reviews
+        model = Commentary
         fields = (
             'id',
-            'user',
+            'first_name',
+            'last_name',
+            'email',
             'text',
-            'blog'
         )
 
+
+class ListCommentSerializer(serializers.ModelSerializer):
+    count_comment = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Commentary
+        fields = (
+            'id',
+            'first_name',
+            'last_name',
+            'email',
+            'text',
+            'count_comment'
+        )
+
+
+class DetailListBlogSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    reviews = serializers.SerializerMethodField()
+    count_comment = serializers.SerializerMethodField()
+    comment = CommentSerializer(many=True)
+    category = CategorySerializer()
+
+    class Meta:
+        model = Blog
+        fields = (
+            'id',
+            'category',
+            'user',
+            'title',
+            'image',
+            'description',
+            'created',
+            'modified',
+            'reviews',
+            'count_comment',
+            'comment',
+        )
+
+    def get_count_comment(self, obj):
+        count = (obj.comment.all().count())
+        return count
+
+    def get_reviews(self, obj):
+        return ReviewTotalSerializer(obj.blog_totals.all().first()).data
+
+
+class BlogSerializer(serializers.ModelSerializer):
+    category = CategorySerializer()
+    count_comment = serializers.SerializerMethodField()
+    class Meta:
+        model = Blog
+        fields = (
+            'id',
+            'category',
+            'title',
+            'modified',
+            'count_comment',
+        )
+    def get_count_comment(self, obj):
+        count = (obj.comment.all().count())
+        return count
 

@@ -33,7 +33,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data['is_active'] = True
-        # validated_data['role'] = Role.objects.get(name='client')
+        validated_data['role'] = Role.objects.get(name='client')
         password = validated_data.get('password')
         user = super().create(validated_data)
         user.set_password(password)
