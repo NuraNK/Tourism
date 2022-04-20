@@ -3,6 +3,7 @@ from rest_framework.exceptions import ValidationError
 
 from .models import User, Role
 
+
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Role
@@ -11,8 +12,10 @@ class RoleSerializer(serializers.ModelSerializer):
             'name',
         )
 
+
 class UserRegisterSerializer(serializers.ModelSerializer):
     role = RoleSerializer(read_only=True)
+
     class Meta:
         model = User
         fields = (
@@ -40,3 +43,14 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+
+
+class ProfileInfoSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'username',
+            'email'
+        )
