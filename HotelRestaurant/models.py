@@ -1,6 +1,9 @@
+import datetime
+
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
+from accounts.models import User
 from base.abstract_model import TimeStampedModel
 
 
@@ -45,11 +48,18 @@ class RoomsHotel(models.Model):
         return f'{self.num_room} - цена {self.price}'
 
 
-class ReviewTotal(TimeStampedModel):
+class ReviewTotalHotel(TimeStampedModel):
     rate = models.FloatField(default=0.00)
     all = models.IntegerField(default=0)
     total = models.IntegerField(default=0)
     hotel = models.ForeignKey(Hotels, on_delete=models.CASCADE, related_name='hotel_totals')
+
+
+class ReviewTotal(TimeStampedModel):
+    rate = models.FloatField(default=0.00)
+    all = models.IntegerField(default=0)
+    total = models.IntegerField(default=0)
+    hotel = models.ForeignKey(Hotels, on_delete=models.CASCADE, related_name='room_totals')
     room = models.ForeignKey(RoomsHotel, on_delete=models.CASCADE, related_name='room_totals')
 
 
@@ -63,18 +73,19 @@ class RateHotels(TimeStampedModel):
     hotel = models.ForeignKey(Hotels, on_delete=models.CASCADE, related_name='reviews_hotel')
 
     def save(self, *args, **kwargs):
-        review_total = ReviewTotal.objects.filter(hotel=self.hotel).first()
+        review_total = ReviewTotalHotel.objects.filter(hotel=self.hotel).first()
         if review_total:
             review_total.total += 1
             review_total.all += self.rate
             review_total.rate = r(review_total.all / review_total.total)
             review_total.save()
         else:
-            ReviewTotal.objects.create(rate=self.rate, all=self.rate, total=1, hotel=self.hotel)
+            ReviewTotalHotel.objects.create(rate=self.rate, all=self.rate, total=1, hotel=self.hotel)
         super().save(*args, **kwargs)
 
     class Meta:
         unique_together = ['author', 'hotel']
+
 
 class RateRoom(TimeStampedModel):
     rate = models.FloatField(validators=[MaxValueValidator(5.0), MinValueValidator(1.0)])
@@ -83,15 +94,50 @@ class RateRoom(TimeStampedModel):
     room = models.ForeignKey(RoomsHotel, on_delete=models.CASCADE, related_name='reviews_room')
 
     def save(self, *args, **kwargs):
-        review_total = ReviewTotal.objects.filter(hotel=self.hotel,room=self.room).first()
+        review_total = ReviewTotal.objects.filter(hotel=self.hotel, room=self.room).first()
         if review_total:
             review_total.total += 1
             review_total.all += self.rate
             review_total.rate = r(review_total.all / review_total.total)
             review_total.save()
         else:
-            ReviewTotal.objects.create(rate=self.rate, all=self.rate, total=1,hotel=self.hotel, room=self.room)
+            ReviewTotal.objects.create(rate=self.rate, all=self.rate, total=1, hotel=self.hotel, room=self.room)
         super().save(*args, **kwargs)
 
     class Meta:
         unique_together = ['author', 'room']
+
+
+class HotelBooking(TimeStampedModel):
+    name = models.CharField(max_length=128)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE
+    )
+    email = models.EmailField()
+    hotel = models.ForeignKey(
+        Hotels,
+        on_delete=models.CASCADE
+    )
+    room = models.ForeignKey(
+        RoomsHotel,
+        on_delete=models.CASCADE
+    )
+    CHOISES = (
+        ("1", "1"),
+        ("2", "2"),
+        ("3", "3"),
+        ("4", "4"),
+        ("5", "5"),
+    )
+    guest = models.CharField(max_length=128, choices=CHOISES, null=True)
+    children = models.CharField(max_length=128, choices=CHOISES, null=True)
+    date_from = models.DateField(default=datetime.date.today())
+    date_to = models.DateField(default=datetime.date.today() + datetime.timedelta(1))
+    booking = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.name} - {self.date_from}"
+
+    class Meta:
+        unique_together = ['hotel', 'room', 'date_from', 'date_to']
