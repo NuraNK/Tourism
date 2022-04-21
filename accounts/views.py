@@ -2,14 +2,15 @@ from django.shortcuts import render
 
 # Create your views here.
 from rest_framework import status
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import User, Role
-from .serializers import UserRegisterSerializer
+from .serializers import UserRegisterSerializer, ProfileInfoSerializer
+
 
 class UserRegisterView(CreateAPIView):
     serializer_class = UserRegisterSerializer
@@ -55,3 +56,11 @@ class LoginView(TokenObtainPairView):
             return Response({"detail": "role net"}, status=status.HTTP_400_BAD_REQUEST)
 
         return super().post(request, *args, **kwargs)
+
+
+class ProfileInfoVIew(RetrieveAPIView):
+    serializer_class = ProfileInfoSerializer
+
+    def get_object(self):
+        user = self.request.user
+        return user
