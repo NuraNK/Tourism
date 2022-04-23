@@ -19,6 +19,7 @@ urlpatterns = [
     path('create/rate/<int:hotel_id>/<int:room_id>/', CreateRateRoomView.as_view()),
 
     path('<int:hotel_id>/<int:room_id>/booking/', BookingView.as_view()),
-    path('<int:hotel_id>/<int:room_id>/booking/destroy/', DeleteBookingView.as_view()),
+    path('<int:hotel_id>/<int:room_id>/<int:order_num>/destroy/', DeleteBookingView.as_view()),
 
 ]
+#from to price

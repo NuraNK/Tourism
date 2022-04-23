@@ -6,6 +6,12 @@ from django.db import models
 from accounts.models import User
 from base.abstract_model import TimeStampedModel
 
+class Gallery(TimeStampedModel):
+    name = models.CharField(max_length=128)
+    image = models.ImageField(upload_to='hotel_images/', null=True)
+
+    def __str__(self):
+        return self.name
 
 class City(models.Model):
     city = models.CharField(
@@ -22,7 +28,7 @@ class Hotels(models.Model):
     name = models.CharField(max_length=128)
     description = models.TextField()
     avatar_hotel = models.ImageField(upload_to='avatar_hotel/')
-    photo_hotel = models.ImageField(upload_to='photo_hotel')
+    gallery = models.ManyToManyField(Gallery, related_name='gallery_hotel', null=True, blank=True)
     city = models.ForeignKey(
         City,
         on_delete=models.CASCADE
@@ -31,7 +37,7 @@ class Hotels(models.Model):
 
     def __str__(self):
         return self.name
-
+# Hotels.objects.filter(reviews_hotel__rate=)
 
 class RoomsHotel(models.Model):
     hotel = models.ForeignKey(
@@ -42,7 +48,7 @@ class RoomsHotel(models.Model):
     description = models.TextField()
     price = models.IntegerField()
     avatar_room = models.ImageField(upload_to='avatar_hotel/')
-    photo_room = models.ImageField(upload_to='photo_hotel')
+    gallery = models.ManyToManyField(Gallery, related_name='gallery_room', null=True, blank=True)
 
     def __str__(self):
         return f'{self.num_room} - цена {self.price}'
@@ -110,10 +116,10 @@ class RateRoom(TimeStampedModel):
 
 class HotelBooking(TimeStampedModel):
     name = models.CharField(max_length=128)
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE
-    )
+    # user = models.ForeignKey(
+    #     User,
+    #     on_delete=models.CASCADE
+    # )
     email = models.EmailField()
     hotel = models.ForeignKey(
         Hotels,
@@ -130,6 +136,7 @@ class HotelBooking(TimeStampedModel):
         ("4", "4"),
         ("5", "5"),
     )
+    order_num = models.IntegerField()
     guest = models.CharField(max_length=128, choices=CHOISES, null=True)
     children = models.CharField(max_length=128, choices=CHOISES, null=True)
     date_from = models.DateField(default=datetime.date.today())

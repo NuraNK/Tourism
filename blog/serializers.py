@@ -149,3 +149,23 @@ class BlogSerializer(serializers.ModelSerializer):
     def get_count_comment(self, obj):
         count = (obj.comment.all().count())
         return count
+
+class RecentBlogSerializer(serializers.ModelSerializer):
+    user = ProfileInfoSerializer()
+    count_comment = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Blog
+        fields = (
+            'id',
+            # 'category',
+            'title',
+            'image',
+            'created',
+            'user',
+            'count_comment',
+        )
+
+    def get_count_comment(self, obj):
+        count = (obj.comment.all().count())
+        return count

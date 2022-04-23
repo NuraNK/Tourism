@@ -12,9 +12,9 @@ class TourFilter(django_filters.FilterSet):
 
     from_date = django_filters.DateFilter(field_name='from_date', lookup_expr='gte')
     to_date = django_filters.DateFilter(field_name='to_date', lookup_expr='lte')
-    place = CharFilter(method='search_filter')
+    place = CharFilter(method='search_filter')  #-
 
-    count = NumberFilter(method='search_filter_number')
+    count = NumberFilter(method='search_filter_number')  #-
 
     class Meta:
         model = Tour

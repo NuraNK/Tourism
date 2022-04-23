@@ -10,3 +10,5 @@ urlpatterns = [
     path('order/', TourOrderList.as_view()),
     path('check-place/<int:pk>/', CheckPlaceView.as_view()),
 ]
+
+#

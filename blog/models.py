@@ -31,11 +31,10 @@ class Blog(TimeStampedModel):
     )
     image = models.ImageField(upload_to='blog_images/', null=True)
     description = QuillField()
-
     def __str__(self):
         return self.title
 
-
+# Blog.objects.filter(category_blog)
 class ReviewTotal(TimeStampedModel):
     rate = models.FloatField(default=0.00)
     all = models.IntegerField(default=0)

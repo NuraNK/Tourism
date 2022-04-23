@@ -1,8 +1,12 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
-
+from base.service import generate_order_book
+from .filter import CategoryBlogFilter
 from .models import Blog, Review, Commentary, Category
-from .serializers import CreateBlogSerializer, DetailListBlogSerializer, CommentSerializer, RateSerializer, \
-    BlogSerializer, ListCommentSerializer, CategoryListSerializer, CategorySerializer
+from .serializers import CreateBlogSerializer, DetailListBlogSerializer, \
+    CommentSerializer, RateSerializer, \
+    BlogSerializer, ListCommentSerializer, CategoryListSerializer, \
+    CategorySerializer, RecentBlogSerializer
 from rest_framework import generics
 
 
@@ -39,6 +43,9 @@ class RetrieveListBlogView(generics.RetrieveAPIView):
 class ListBlogView(generics.ListAPIView):
     serializer_class = BlogSerializer
     queryset = Blog.objects.all()
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = CategoryBlogFilter
+
 
 
 class CreateCommentView(generics.CreateAPIView):
@@ -64,7 +71,7 @@ class DeleteCommentView(generics.DestroyAPIView):
             pk=self.kwargs['pk']
         )
         query.delete()
-        return Response({"detail":"Комантрия удален"})
+        return Response({"detail": "Комантрия удален"})
 
     def get_queryset(self):
         return Commentary.objects.filter(
@@ -92,7 +99,6 @@ class CreateRateView(generics.CreateAPIView):
     serializer_class = RateSerializer
     queryset = Review.objects.all()
 
-    # def create(self, request, *args, **kwargs):
 
     def perform_create(self, serializer):
         blog = self.kwargs['blog_id']
@@ -103,3 +109,17 @@ class CreateRateView(generics.CreateAPIView):
         return self.queryset.filter(
             blog_id=self.kwargs['blog_id']
         )
+
+
+#
+class RecentBLogView(generics.ListAPIView):
+    serializer_class = RecentBlogSerializer
+    queryset = Blog.objects.all()
+
+    def get_queryset(self):
+        query = Blog.objects.filter(
+            category__category_blog__id__in=[self.kwargs['blog_id']]
+        )
+        if len(query) < 10:
+            return query
+        return query[:10]
