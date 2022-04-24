@@ -61,6 +61,9 @@ class CreateBlogSerializer(serializers.ModelSerializer):
             'category',
             'user',
             'title',
+            # 'paragraph',
+            # 'tag',
+            # 'description',
             'image',
             'description',
 

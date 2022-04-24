@@ -121,3 +121,7 @@ class RecentBLogView(generics.ListAPIView):
             category__category_blog__id__in=[self.kwargs['blog_id']]
         ).distinct().exclude(pk=self.kwargs['blog_id'])
         return query[:3]
+
+class IndexRecentBLogView(generics.ListAPIView):
+    serializer_class = RecentBlogSerializer
+    queryset = Blog.objects.order_by('-id')[:5]

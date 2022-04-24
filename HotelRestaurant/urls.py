@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import ListHotelView, CreateHotelView, CreateRateView, CreateRoomView, ListRoomHotelView, \
-    CreateRateRoomView, DetailHotelView, OurRoomsView, BookingView, RoomUpdateDestroyView, UpdateDestroyHotelView, DeleteBookingView
+    CreateRateRoomView, DetailHotelView, OurRoomsView, BookingView, RoomUpdateDestroyView, UpdateDestroyHotelView, DeleteBookingView, IndexHotelView
 
 urlpatterns = [
     path('list/', ListHotelView.as_view()),
@@ -20,6 +20,10 @@ urlpatterns = [
 
     path('<int:hotel_id>/<int:room_id>/booking/', BookingView.as_view()),
     path('<int:hotel_id>/<int:room_id>/<int:order_num>/destroy/', DeleteBookingView.as_view()),
+
+    path('list_index/', IndexHotelView.as_view()),
+
+
 
 ]
 #from to price
