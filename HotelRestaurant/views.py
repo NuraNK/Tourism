@@ -108,6 +108,9 @@ class OurRoomsView(generics.ListAPIView):
     queryset = RoomsHotel.objects.all()
 
     def get_queryset(self):
+        # print(RoomsHotel.objects.filter(
+        #     booking_room__date_to=
+        # ))
         return self.queryset.filter(
             hotel_id=self.kwargs['hotel_id']
         )

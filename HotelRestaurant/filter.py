@@ -29,6 +29,10 @@ class HotelsRoomFilter(django_filters.FilterSet):
                                             lookup_expr='gte')
     price_to = django_filters.NumberFilter(field_name='price',
                                           lookup_expr='lte')
+    from_date = django_filters.DateFilter(field_name='booking_room__date_to',
+                                          lookup_expr='gte', exclude=True)
+    to_date = django_filters.DateFilter(field_name='booking_room__date_from',
+                                        lookup_expr='lte', exclude=True)
 
 
     class Meta:
