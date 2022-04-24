@@ -1,13 +1,14 @@
 from rest_framework import serializers
 
 from accounts.models import User
-from .models import City, Hotels, RoomsHotel, ReviewTotal, RateHotels, RateRoom,HotelBooking
+from .models import City, Hotels, RoomsHotel, ReviewTotal, RateHotels, RateRoom, HotelBooking
 
 
 class ReviewTotalSerializer(serializers.ModelSerializer):
     class Meta:
         model = ReviewTotal
         fields = ('rate', 'total')
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -17,6 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
             'email',
         )
 
+
 class RateSerializer(serializers.ModelSerializer):
     class Meta:
         model = RateHotels
@@ -24,6 +26,7 @@ class RateSerializer(serializers.ModelSerializer):
             'id',
             'rate',
         )
+
 
 class RateRoomSerializer(serializers.ModelSerializer):
     class Meta:
@@ -33,6 +36,7 @@ class RateRoomSerializer(serializers.ModelSerializer):
             'rate',
         )
 
+
 class CitySerializer(serializers.ModelSerializer):
     class Meta:
         model = City
@@ -41,8 +45,10 @@ class CitySerializer(serializers.ModelSerializer):
             'city'
         )
 
+
 class HotelsSerializer(serializers.ModelSerializer):
     reviews_hotel = serializers.SerializerMethodField()
+
     class Meta:
         model = Hotels
         fields = (
@@ -55,11 +61,15 @@ class HotelsSerializer(serializers.ModelSerializer):
             'photo_hotel',
             'adress',
         )
+
     def get_reviews_hotel(self, obj):
         return ReviewTotalSerializer(obj.hotel_totals.all().first()).data
 
+
 class ListHotelsSerializer(serializers.ModelSerializer):
     reviews_hotel = serializers.SerializerMethodField()
+    city = CitySerializer()
+
     class Meta:
         model = Hotels
         fields = (
@@ -70,8 +80,10 @@ class ListHotelsSerializer(serializers.ModelSerializer):
             'description',
             'avatar_hotel',
         )
+
     def get_reviews_hotel(self, obj):
         return ReviewTotalSerializer(obj.hotel_totals.all().first()).data
+
 
 class RoomHotelSerializer(serializers.ModelSerializer):
     reviews_room = serializers.SerializerMethodField()
@@ -92,8 +104,10 @@ class RoomHotelSerializer(serializers.ModelSerializer):
     def get_reviews_room(self, obj):
         return ReviewTotalSerializer(obj.room_totals.all().first()).data
 
+
 class OurRoomsSerializer(serializers.ModelSerializer):
     reviews_room = serializers.SerializerMethodField()
+
     # city = serializers.SerializerMethodField()
     class Meta:
         model = RoomsHotel
@@ -105,8 +119,10 @@ class OurRoomsSerializer(serializers.ModelSerializer):
             'description',
             'avatar_room',
         )
+
     def get_reviews_room(self, obj):
         return ReviewTotalSerializer(obj.room_totals.all().first()).data
+
 
 class BookingSerializer(serializers.ModelSerializer):
     class Meta:

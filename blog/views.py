@@ -119,7 +119,5 @@ class RecentBLogView(generics.ListAPIView):
     def get_queryset(self):
         query = Blog.objects.filter(
             category__category_blog__id__in=[self.kwargs['blog_id']]
-        )
-        if len(query) < 10:
-            return query
-        return query[:10]
+        ).distinct().exclude(pk=self.kwargs['blog_id'])
+        return query[:3]
