@@ -123,3 +123,7 @@ class RecentBLogView(generics.ListAPIView):
         if len(query) < 10:
             return query
         return query[:10]
+
+class IndexRecentBLogView(generics.ListAPIView):
+    serializer_class = RecentBlogSerializer
+    queryset = Blog.objects.order_by('-id')[:5]

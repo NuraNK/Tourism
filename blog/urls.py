@@ -1,7 +1,7 @@
 from django.urls import path, include
 from .views import CreateBlogView, RetrieveListBlogView, CreateCommentView, \
     CreateRateView, UpdateBlogView, ListCommentView, ListBlogView, \
-    ListCategoryView, DeleteCommentView,RecentBLogView
+    ListCategoryView, DeleteCommentView,RecentBLogView, IndexRecentBLogView
 
 urlpatterns = [
     path('create/', CreateBlogView.as_view()),
@@ -13,6 +13,7 @@ urlpatterns = [
     path('create/rate/<int:blog_id>/', CreateRateView.as_view()),
     path('list/', ListBlogView.as_view()),                         #------------------GET BLOG LIST BY CATEGORY_ID
     path('list_recent/<int:blog_id>/', RecentBLogView.as_view()),  #-----------------------RECEN BLOG 10 ШТУК
+    path('list_recent/', IndexRecentBLogView.as_view()), 
     path('list-category/', ListCategoryView.as_view()),
     path('list-comment/<int:blog_id>/', ListCommentView.as_view()),
 ]

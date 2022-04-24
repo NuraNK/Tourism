@@ -21,10 +21,9 @@ class HotelsFilter(django_filters.FilterSet):
         fields = ['city']
 
 class HotelsRoomFilter(django_filters.FilterSet):
-    rate_from = django_filters.NumberFilter(field_name='reviews_room__rate',
-                                            lookup_expr='gte')
-    rate_to = django_filters.NumberFilter(field_name='reviews_room__rate',
-                                          lookup_expr='lte')
+    # rate_from = django_filters.NumberFilter(field_name='reviews_room__rate',
+    #                                         lookup_expr='gte')
+    rate_to = django_filters.NumberFilter(field_name='reviews_room__rate')
     price_from = django_filters.NumberFilter(field_name='price',
                                             lookup_expr='gte')
     price_to = django_filters.NumberFilter(field_name='price',
