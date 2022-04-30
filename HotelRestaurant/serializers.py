@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from accounts.models import User
-from .models import City, Hotels, RoomsHotel, ReviewTotal, RateHotels, RateRoom, HotelBooking
+from .models import City, Hotels, RoomsHotel, ReviewTotal, RateHotels, RateRoom, HotelBooking, Gallery
 
 
 class ReviewTotalSerializer(serializers.ModelSerializer):
@@ -46,6 +46,12 @@ class CitySerializer(serializers.ModelSerializer):
         )
 
 
+class GallerySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Gallery
+        fields = "__all__"
+
+
 class HotelsSerializer(serializers.ModelSerializer):
     reviews_hotel = serializers.SerializerMethodField()
 
@@ -87,6 +93,7 @@ class ListHotelsSerializer(serializers.ModelSerializer):
 
 class RoomHotelSerializer(serializers.ModelSerializer):
     reviews_room = serializers.SerializerMethodField()
+    gallery = GallerySerializer(many=True)
 
     class Meta:
         model = RoomsHotel
@@ -97,7 +104,7 @@ class RoomHotelSerializer(serializers.ModelSerializer):
             'description',
             'price',
             'avatar_room',
-            'photo_room',
+            'gallery',
             'reviews_room'
         )
 

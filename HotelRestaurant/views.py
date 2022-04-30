@@ -89,6 +89,7 @@ class DetailHotelView(generics.ListAPIView):
             pk=self.kwargs['pk'],
         )
 
+
 class ListRoomHotelView(generics.ListAPIView):
     serializer_class = RoomHotelSerializer
     queryset = RoomsHotel.objects.all()
@@ -184,4 +185,4 @@ class DeleteBookingView(generics.DestroyAPIView):
 
 class IndexHotelView(generics.ListAPIView):
     serializer_class = ListHotelsSerializer
-    queryset = Hotels.objects.order_by('-reviews_hotel__rate')[:5]
+    queryset = Hotels.objects.order_by('-reviews_hotel__rate')[:10]
