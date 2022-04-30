@@ -1,3 +1,5 @@
+import json
+
 import rest_framework.views
 from django.shortcuts import render
 import datetime
@@ -32,6 +34,14 @@ class ListHotelView(generics.ListAPIView):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = HotelsFilter
     queryset = Hotels.objects.all()
+
+    def get_queryset(self):
+        queryset = self.queryset.all()
+        list_of_rating = self.request.query_params.get('ratings', None)
+        if list_of_rating:
+            list_of_rating = json.loads(list_of_rating)
+            queryset = queryset.filter(reviews_hotel__rate__in=list_of_rating)
+        return queryset
 
 
 class CreateRateView(generics.CreateAPIView):
@@ -108,12 +118,14 @@ class OurRoomsView(generics.ListAPIView):
     queryset = RoomsHotel.objects.all()
 
     def get_queryset(self):
-        # print(RoomsHotel.objects.filter(
-        #     booking_room__date_to=
-        # ))
-        return self.queryset.filter(
-            hotel_id=self.kwargs['hotel_id']
-        )
+        queryset = self.queryset.all()
+        list_of_rating = self.request.query_params.get('ratings', None)
+        if list_of_rating:
+            list_of_rating = json.loads(list_of_rating)
+            queryset = queryset.filter(reviews_room__rate__in=list_of_rating,
+                                       hotel_id=self.kwargs['hotel_id'])
+
+        return queryset
 
 
 class BookingView(generics.CreateAPIView):
@@ -185,4 +197,8 @@ class DeleteBookingView(generics.DestroyAPIView):
 
 class IndexHotelView(generics.ListAPIView):
     serializer_class = ListHotelsSerializer
-    queryset = Hotels.objects.order_by('-reviews_hotel__rate')[:10]
+    queryset = Hotels.objects.order_by('-reviews_hotel__rate')[:5]
+
+class IndexRoomView(generics.ListAPIView):
+    serializer_class = OurRoomsSerializer
+    queryset = RoomsHotel.objects.all()[:10]

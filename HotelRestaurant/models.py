@@ -61,7 +61,7 @@ class RoomsHotel(models.Model):
 
 
 class ReviewTotalHotel(TimeStampedModel):
-    rate = models.FloatField(default=0.00)
+    rate = models.IntegerField(default=0)
     all = models.IntegerField(default=0)
     total = models.IntegerField(default=0)
     hotel = models.ForeignKey(Hotels, on_delete=models.CASCADE,
@@ -83,8 +83,8 @@ def r(x):
 
 
 class RateHotels(TimeStampedModel):
-    rate = models.FloatField(
-        validators=[MaxValueValidator(5.0), MinValueValidator(1.0)])
+    rate = models.IntegerField(
+        validators=[MaxValueValidator(5), MinValueValidator(0)])
     author = models.ForeignKey('accounts.User', on_delete=models.CASCADE,
                                related_name='reviews_hotel')
     hotel = models.ForeignKey(Hotels, on_delete=models.CASCADE,
