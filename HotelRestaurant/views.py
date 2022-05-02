@@ -35,13 +35,13 @@ class ListHotelView(generics.ListAPIView):
     filterset_class = HotelsFilter
     queryset = Hotels.objects.all()
 
-    def get_queryset(self):
-        queryset = self.queryset.all()
-        list_of_rating = self.request.query_params.get('ratings', None)
-        if list_of_rating:
-            list_of_rating = json.loads(list_of_rating)
-            queryset = queryset.filter(reviews_hotel__rate__in=list_of_rating)
-        return queryset
+    # def get_queryset(self):
+    #     queryset = self.queryset.all()
+    #     list_of_rating = self.request.query_params.get('ratings', None)
+    #     if list_of_rating:
+    #         list_of_rating = json.loads(list_of_rating)
+    #         queryset = queryset.filter(reviews_hotel__rate__in=list_of_rating)
+    #     return queryset
 
 
 class CreateRateView(generics.CreateAPIView):
