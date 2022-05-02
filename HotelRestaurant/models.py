@@ -127,9 +127,6 @@ class RateRoom(TimeStampedModel):
                                        hotel=self.hotel, room=self.room)
         super().save(*args, **kwargs)
 
-    class Meta:
-        unique_together = ['author', 'room']
-
 
 class HotelBooking(TimeStampedModel):
     name = models.CharField(max_length=128)
