@@ -19,7 +19,7 @@ class HotelsFilter(django_filters.FilterSet):
         fields = ['city']
 
     def rating_filter(self, queryset, name, value):
-        queryset = queryset.filter(reviews_hotel__rate__in=value.split(","))
+        queryset = queryset.filter(hotel_totals__rate__in=value.split(","))
 
         return queryset
 
