@@ -103,9 +103,6 @@ class RateHotels(TimeStampedModel):
                                             total=1, hotel=self.hotel)
         super().save(*args, **kwargs)
 
-    class Meta:
-        unique_together = ['author', 'hotel']
-
 
 class RateRoom(TimeStampedModel):
     rate = models.FloatField(
@@ -129,9 +126,6 @@ class RateRoom(TimeStampedModel):
             ReviewTotal.objects.create(rate=self.rate, all=self.rate, total=1,
                                        hotel=self.hotel, room=self.room)
         super().save(*args, **kwargs)
-
-    class Meta:
-        unique_together = ['author', 'room']
 
 
 class HotelBooking(TimeStampedModel):

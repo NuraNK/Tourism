@@ -34,6 +34,7 @@ class Tour(TimeStampedModel):
     count = models.IntegerField(default=0)
     short_description = models.TextField()
     description = QuillField(null=True, blank=True)
+    image3d = models.ImageField(upload_to='tour_images/', null=True)
     video = models.FileField(upload_to='tour_video/', null=True, blank=True)
 
     def __str__(self):
