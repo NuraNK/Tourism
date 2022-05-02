@@ -164,10 +164,10 @@ class BookingView(generics.CreateAPIView):
                 date_to=date_to,
                 booking=True
             )
-        send_mail('Вы успешно бронировали номер',
-                  message(order_num, date_from, date_to, room),
-                  settings.EMAIL_HOST_USER,
-                  [email])
+        # send_mail('Вы успешно бронировали номер',
+        #           message(order_num, date_from, date_to, room),
+        #           settings.EMAIL_HOST_USER,
+        #           [email])
         return Response({"detail": "OK"}, status=200)
 
     def get_queryset(self):
@@ -197,7 +197,8 @@ class DeleteBookingView(generics.DestroyAPIView):
 
 class IndexHotelView(generics.ListAPIView):
     serializer_class = ListHotelsSerializer
-    queryset = Hotels.objects.order_by('-reviews_hotel__rate')[:5]
+    queryset = Hotels.objects.all()[:5]
+
 
 class IndexRoomView(generics.ListAPIView):
     serializer_class = OurRoomsSerializer
