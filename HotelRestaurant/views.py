@@ -149,7 +149,7 @@ class BookingView(generics.CreateAPIView):
         if HotelBooking.objects.filter(hotel_id=hotel[0], room_id=room,
                                        date_from=date_from).exists():
             return Response({"error": "error"})
-        for i in range((str_to_date(date_to) - str_to_date(date_from)).days):
+        for i in range((str_to_date(date_to) - str_to_date(date_from)).days + 1):
             HotelBooking.objects.create(
                 name=request.data['name'],
                 # user=self.request.user,
@@ -163,10 +163,10 @@ class BookingView(generics.CreateAPIView):
                 date_to=date_to,
                 booking=True
             )
-        send_mail('Вы успешно бронировали номер',
-                  message(order_num, date_from, date_to, room),
-                  settings.EMAIL_HOST_USER,
-                  [email])
+        # send_mail('Вы успешно бронировали номер',
+        #           message(order_num, date_from, date_to, room),
+        #           settings.EMAIL_HOST_USER,
+        #           [email])
         return Response({"detail": "OK"}, status=200)
 
     def get_queryset(self):
