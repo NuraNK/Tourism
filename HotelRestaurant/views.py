@@ -5,7 +5,7 @@ from django.shortcuts import render
 import datetime
 
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.response import Response
 
 from django.conf import settings
@@ -48,10 +48,20 @@ class CreateRateView(generics.CreateAPIView):
     serializer_class = RateSerializer
     queryset = RateHotels.objects.all()
 
-    def perform_create(self, serializer):
+    def post(self, request, *args, **kwargs):
         hotel = self.kwargs['hotel_id']
         user = self.request.user
-        serializer.save(author=user, hotel_id=hotel)
+        rate = request.data.get('rate')
+        if rate:
+            rate_r = RateHotels.objects.filter(
+                 hotel_id=hotel, author=user
+            )
+            if rate_r:
+                rate_r.delete()
+        RateHotels.objects.create(
+            rate=rate, author=user, hotel_id=hotel,
+        )
+        return Response(status=status.HTTP_201_CREATED)
 
     def get_queryset(self):
         return self.queryset.filter(
@@ -77,11 +87,21 @@ class CreateRateRoomView(generics.CreateAPIView):
     serializer_class = RateRoomSerializer
     queryset = RateRoom.objects.all()
 
-    def perform_create(self, serializer):
+    def post(self, request, *args, **kwargs):
         hotel = self.kwargs['hotel_id']
         user = self.request.user
         room = self.kwargs['room_id']
-        serializer.save(author=user, hotel_id=hotel, room_id=room)
+        rate = request.data.get('rate')
+        if rate:
+            rate_r = RateRoom.objects.filter(
+                 hotel_id=hotel, room_id=room, author=user
+            )
+            if rate_r:
+                rate_r.delete()
+        RateRoom.objects.create(
+            rate=rate, author=user, hotel_id=hotel, room_id=room
+        )
+        return Response(status=status.HTTP_201_CREATED)
 
     def get_queryset(self):
         return self.queryset.filter(
@@ -150,7 +170,8 @@ class BookingView(generics.CreateAPIView):
         if HotelBooking.objects.filter(hotel_id=hotel[0], room_id=room,
                                        date_from=date_from).exists():
             return Response({"error": "error"})
-        for i in range((str_to_date(date_to) - str_to_date(date_from)).days + 1):
+        for i in range(
+                (str_to_date(date_to) - str_to_date(date_from)).days + 1):
             HotelBooking.objects.create(
                 name=request.data['name'],
                 # user=self.request.user,

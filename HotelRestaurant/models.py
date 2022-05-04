@@ -95,7 +95,7 @@ class RateHotels(TimeStampedModel):
             hotel=self.hotel).first()
         if review_total:
             review_total.total += 1
-            review_total.all += self.rate
+            review_total.all += int(self.rate)
             review_total.rate = r(review_total.all / review_total.total)
             review_total.save()
         else:
@@ -119,7 +119,7 @@ class RateRoom(TimeStampedModel):
                                                   room=self.room).first()
         if review_total:
             review_total.total += 1
-            review_total.all += self.rate
+            review_total.all += int(self.rate)
             review_total.rate = r(review_total.all / review_total.total)
             review_total.save()
         else:
